@@ -1,0 +1,6 @@
+CREATE DATABASE IF NOT EXISTS service_reviews;
+CREATE DATABASE IF NOT EXISTS products;
+
+
+
+

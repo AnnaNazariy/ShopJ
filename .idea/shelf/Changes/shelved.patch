@@ -1,0 +1,383 @@
+Index: service_reviews/service_reviews/src/main/java/com/example/service_reviews/ReviewRestController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/service_reviews/service_reviews/src/main/java/com/example/service_reviews/ReviewRestController.java b/service_reviews/service_reviews/src/main/java/com/example/service_reviews/ReviewRestController.java
+new file mode 100644
+--- /dev/null	(date 1732152038988)
++++ b/service_reviews/service_reviews/src/main/java/com/example/service_reviews/ReviewRestController.java	(date 1732152038988)
+@@ -0,0 +1,29 @@
++package com.example.service_reviews;
++
++import lombok.RequiredArgsConstructor;
++import org.springframework.http.HttpStatus;
++import org.springframework.web.bind.annotation.*;
++
++import java.util.List;
++
++@RestController
++@RequestMapping("/api/reviews")
++@RequiredArgsConstructor
++public class ReviewRestController {
++
++    private final ReviewService reviewService;
++
++    @PostMapping
++    @ResponseStatus(HttpStatus.CREATED)
++    public String createReview(@RequestBody ReviewRequest reviewRequest) {
++        reviewService.createReview(reviewRequest);
++        return "createReview";
++    }
++
++    @GetMapping
++    @ResponseStatus(HttpStatus.OK)
++    public List<ReviewResponse> getAllReviews() {
++        return reviewService.getAllReviews();
++    }
++}
++
+Index: product/src/main/java/com/jewelryshop/product/OpenAPIConfig.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/product/src/main/java/com/jewelryshop/product/OpenAPIConfig.java b/product/src/main/java/com/jewelryshop/product/OpenAPIConfig.java
+new file mode 100644
+--- /dev/null	(date 1732165248622)
++++ b/product/src/main/java/com/jewelryshop/product/OpenAPIConfig.java	(date 1732165248622)
+@@ -0,0 +1,19 @@
++package com.jewelryshop.product;
++
++import io.swagger.v3.oas.models.OpenAPI;
++import io.swagger.v3.oas.models.info.Info;
++import io.swagger.v3.oas.models.info.License;
++import org.springframework.context.annotation.Bean;
++import org.springframework.context.annotation.Configuration;
++
++@Configuration
++public class OpenAPIConfig {
++    @Bean
++    public OpenAPI productsServiceAPI() {
++        return new OpenAPI()
++                .info(new Info().title("Product Service API")
++                        .description("This is the REST API for Product Service")
++                        .version("v0.0.1")
++                        .license(new License().name("Apache 2.0")));
++    }
++}
+\ No newline at end of file
+Index: service_reviews/service_reviews/src/main/java/com/example/service_reviews/Review.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/service_reviews/service_reviews/src/main/java/com/example/service_reviews/Review.java b/service_reviews/service_reviews/src/main/java/com/example/service_reviews/Review.java
+new file mode 100644
+--- /dev/null	(date 1732146238228)
++++ b/service_reviews/service_reviews/src/main/java/com/example/service_reviews/Review.java	(date 1732146238228)
+@@ -0,0 +1,35 @@
++package com.example.service_reviews;
++
++import jakarta.persistence.*;
++import lombok.AllArgsConstructor;
++import lombok.Builder;
++import lombok.Data;
++import lombok.NoArgsConstructor;
++
++@Entity
++@Table(name = "reviews")
++@AllArgsConstructor
++@NoArgsConstructor
++@Builder
++@Data
++public class Review {
++
++    @Id
++    @GeneratedValue(strategy = GenerationType.IDENTITY)
++    private Long id;
++
++    @Column(name = "product_id", nullable = false)
++    private Long productId;
++
++    @Column(name = "reviewer_name", nullable = false)
++    private String reviewerName;
++
++    @Column(name = "rating", nullable = false)
++    private Integer rating;
++
++    @Column(name = "comment", columnDefinition = "TEXT")
++    private String comment;
++
++    @Column(name = "review_date", nullable = false)
++    private String reviewDate;
++}
+Index: service_reviews/service_reviews/src/main/java/com/example/service_reviews/OpenAPIConfig.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/service_reviews/service_reviews/src/main/java/com/example/service_reviews/OpenAPIConfig.java b/service_reviews/service_reviews/src/main/java/com/example/service_reviews/OpenAPIConfig.java
+new file mode 100644
+--- /dev/null	(date 1732165182950)
++++ b/service_reviews/service_reviews/src/main/java/com/example/service_reviews/OpenAPIConfig.java	(date 1732165182950)
+@@ -0,0 +1,19 @@
++package com.example.service_reviews;
++
++import io.swagger.v3.oas.models.OpenAPI;
++import io.swagger.v3.oas.models.info.Info;
++import io.swagger.v3.oas.models.info.License;
++import org.springframework.context.annotation.Bean;
++import org.springframework.context.annotation.Configuration;
++
++@Configuration
++public class OpenAPIConfig {
++    @Bean
++    public OpenAPI service_reviewsServiceAPI() {
++        return new OpenAPI()
++                .info(new Info().title("Product Service API")
++                        .description("This is the REST API for Product Service")
++                        .version("v0.0.1")
++                        .license(new License().name("Apache 2.0")));
++    }
++}
+\ No newline at end of file
+Index: service_reviews/service_reviews/src/main/java/com/example/service_reviews/ProductClient.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/service_reviews/service_reviews/src/main/java/com/example/service_reviews/ProductClient.java b/service_reviews/service_reviews/src/main/java/com/example/service_reviews/ProductClient.java
+new file mode 100644
+--- /dev/null	(date 1732162207408)
++++ b/service_reviews/service_reviews/src/main/java/com/example/service_reviews/ProductClient.java	(date 1732162207408)
+@@ -0,0 +1,12 @@
++package com.example.service_reviews;
++
++import org.springframework.cloud.openfeign.FeignClient;
++import org.springframework.web.bind.annotation.GetMapping;
++import org.springframework.web.bind.annotation.RequestParam;
++
++@FeignClient(value = "product-service", url = "${product.url}")
++public interface ProductClient {
++
++    @GetMapping("/api/product/stock")
++    boolean isInStock(@RequestParam Long productId);
++}
+Index: service_reviews/service_reviews/src/main/java/com/example/service_reviews/ReviewRepository.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/service_reviews/service_reviews/src/main/java/com/example/service_reviews/ReviewRepository.java b/service_reviews/service_reviews/src/main/java/com/example/service_reviews/ReviewRepository.java
+new file mode 100644
+--- /dev/null	(date 1732140764162)
++++ b/service_reviews/service_reviews/src/main/java/com/example/service_reviews/ReviewRepository.java	(date 1732140764162)
+@@ -0,0 +1,9 @@
++package com.example.service_reviews;
++
++import org.springframework.data.jpa.repository.JpaRepository;
++import org.springframework.stereotype.Repository;
++
++@Repository
++public interface ReviewRepository extends JpaRepository<Review, Long> {
++}
++
+Index: service_reviews/service_reviews/src/main/java/com/example/service_reviews/ReviewService.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/service_reviews/service_reviews/src/main/java/com/example/service_reviews/ReviewService.java b/service_reviews/service_reviews/src/main/java/com/example/service_reviews/ReviewService.java
+new file mode 100644
+--- /dev/null	(date 1732159536652)
++++ b/service_reviews/service_reviews/src/main/java/com/example/service_reviews/ReviewService.java	(date 1732159536652)
+@@ -0,0 +1,55 @@
++package com.example.service_reviews;
++
++import lombok.RequiredArgsConstructor;
++import jakarta.transaction.Transactional;
++import lombok.extern.slf4j.Slf4j;
++import org.springframework.cloud.openfeign.EnableFeignClients;
++import org.springframework.stereotype.Service;
++
++import java.util.List;
++
++@Service
++@RequiredArgsConstructor
++@EnableFeignClients
++@Transactional
++@Slf4j
++public class ReviewService {
++
++    private final ReviewRepository reviewRepository;
++    private final ProductClient productClient;
++
++    public void createReview(ReviewRequest reviewRequest) {
++        boolean isProduct=productClient.isInStock(reviewRequest.productId());
++        if(isProduct) {
++            Review review = new Review();
++            review.setProductId(reviewRequest.productId());
++            review.setReviewerName(reviewRequest.reviewerName());
++            review.setRating(reviewRequest.rating());
++            review.setComment(reviewRequest.comment());
++            review.setReviewDate(reviewRequest.reviewDate());
++
++
++            reviewRepository.save(review);
++            log.info("Review for product {} is saved", review.getProductId());
++        }
++    }
++
++    public List<ReviewResponse> getAllReviews() {
++        List<Review> reviews = reviewRepository.findAll();
++
++        return reviews.stream()
++                .map(this::mapToReviewResponse)
++                .toList();
++    }
++
++    private ReviewResponse mapToReviewResponse(Review review) {
++        return new ReviewResponse(
++                review.getId(),
++                review.getProductId(),
++                review.getReviewerName(),
++                review.getRating(),
++                review.getComment(),
++                review.getReviewDate()
++        );
++    }
++}
+Index: service_reviews/service_reviews/src/main/java/com/example/service_reviews/ReviewResponse.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/service_reviews/service_reviews/src/main/java/com/example/service_reviews/ReviewResponse.java b/service_reviews/service_reviews/src/main/java/com/example/service_reviews/ReviewResponse.java
+new file mode 100644
+--- /dev/null	(date 1732140764246)
++++ b/service_reviews/service_reviews/src/main/java/com/example/service_reviews/ReviewResponse.java	(date 1732140764246)
+@@ -0,0 +1,4 @@
++package com.example.service_reviews;
++
++public record ReviewResponse(Long id, Long productId, String reviewerName, Integer rating, String comment, String reviewDate) {
++}
+Index: service_reviews/service_reviews/src/main/resources/db/migration/V1__init.sql
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/service_reviews/service_reviews/src/main/resources/db/migration/V1__init.sql b/service_reviews/service_reviews/src/main/resources/db/migration/V1__init.sql
+new file mode 100644
+--- /dev/null	(date 1732144190549)
++++ b/service_reviews/service_reviews/src/main/resources/db/migration/V1__init.sql	(date 1732144190549)
+@@ -0,0 +1,10 @@
++CREATE TABLE `t_reviews` (
++                           `id` BIGINT(20) NOT NULL AUTO_INCREMENT PRIMARY KEY,
++                           `product_id` BIGINT(20) NOT NULL,
++                           `reviewer_name` VARCHAR(255) NOT NULL,
++                           `rating` INT(11) NOT NULL,
++                           `comment` TEXT,
++                           `review_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
++
++);
++
+Index: service_reviews/service_reviews/src/main/resources/db/migration/V2__treviews.sql
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/service_reviews/service_reviews/src/main/resources/db/migration/V2__treviews.sql b/service_reviews/service_reviews/src/main/resources/db/migration/V2__treviews.sql
+new file mode 100644
+--- /dev/null	(date 1732162471270)
++++ b/service_reviews/service_reviews/src/main/resources/db/migration/V2__treviews.sql	(date 1732162471270)
+@@ -0,0 +1,10 @@
++CREATE TABLE `service_reviews.reviews` (
++                             `id` BIGINT(20) NOT NULL AUTO_INCREMENT PRIMARY KEY,
++                             `product_id` BIGINT(20) NOT NULL,
++                             `reviewer_name` VARCHAR(255) NOT NULL,
++                             `rating` INT(11) NOT NULL,
++                             `comment` TEXT,
++                             `review_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
++
++);
++
+Index: laba4/laba4/src/main/java/com/example/laba4/Routes.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/laba4/laba4/src/main/java/com/example/laba4/Routes.java b/laba4/laba4/src/main/java/com/example/laba4/Routes.java
+new file mode 100644
+--- /dev/null	(date 1732164320664)
++++ b/laba4/laba4/src/main/java/com/example/laba4/Routes.java	(date 1732164320664)
+@@ -0,0 +1,31 @@
++package com.example.laba4;
++
++import org.springframework.cloud.gateway.server.mvc.handler.GatewayRouterFunctions;
++import org.springframework.context.annotation.Bean;
++import org.springframework.context.annotation.Configuration;
++import org.springframework.web.servlet.function.RequestPredicates;
++import org.springframework.web.servlet.function.RouterFunction;
++import org.springframework.web.servlet.function.ServerResponse;
++
++import static org.springframework.cloud.gateway.server.mvc.filter.FilterFunctions.setPath;
++import static org.springframework.cloud.gateway.server.mvc.handler.GatewayRouterFunctions.route;
++import static org.springframework.cloud.gateway.server.mvc.handler.HandlerFunctions.http;
++
++@Configuration(proxyBeanMethods = false)
++public class Routes {
++    @Bean
++    public RouterFunction<ServerResponse> productsServiceRoute() {
++        return route("products")
++                .route(RequestPredicates.path("/api/product"), http(
++                        "http://localhost:8081"))
++                .build();
++    }
++    
++    @Bean
++    public RouterFunction<ServerResponse> service_reviewsServiceRoute() {
++        return route("service_reviews")
++                .route(RequestPredicates.path("/api/reviews"), http(
++                        "http://localhost:8082"))
++                .build();
++    }
++}
+Index: service_reviews/service_reviews/src/main/java/com/example/service_reviews/RestTemplateConfig.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/service_reviews/service_reviews/src/main/java/com/example/service_reviews/RestTemplateConfig.java b/service_reviews/service_reviews/src/main/java/com/example/service_reviews/RestTemplateConfig.java
+new file mode 100644
+--- /dev/null	(date 1732140764283)
++++ b/service_reviews/service_reviews/src/main/java/com/example/service_reviews/RestTemplateConfig.java	(date 1732140764283)
+@@ -0,0 +1,14 @@
++package com.example.service_reviews;
++
++import org.springframework.context.annotation.Bean;
++import org.springframework.context.annotation.Configuration;
++import org.springframework.web.client.RestTemplate;
++
++@Configuration
++public class RestTemplateConfig {
++
++    @Bean
++    public RestTemplate restTemplate() {
++        return new RestTemplate();
++    }
++}
+Index: service_reviews/service_reviews/src/main/java/com/example/service_reviews/ReviewRequest.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/service_reviews/service_reviews/src/main/java/com/example/service_reviews/ReviewRequest.java b/service_reviews/service_reviews/src/main/java/com/example/service_reviews/ReviewRequest.java
+new file mode 100644
+--- /dev/null	(date 1732140764230)
++++ b/service_reviews/service_reviews/src/main/java/com/example/service_reviews/ReviewRequest.java	(date 1732140764230)
+@@ -0,0 +1,4 @@
++package com.example.service_reviews;
++
++public record ReviewRequest(Long productId, String reviewerName, Integer rating, String comment, String reviewDate) {
++}
